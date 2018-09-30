@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Info Windows</title>
+<!--     <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style> -->
+  </head>
+  <body>
+	 
+	 <!--The input from the user to search the tow data-->
+	 <form>
+		 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		 
+		 <div class="input-group mb-3">
+		  <div class="input-group-prepend">
+			<span class="input-group-text" id="make-span">Make:</span>
+		  </div>
+		  <input type="text" class="form-control" id="make" placeholder="" aria-label="" aria-describedby="model">
+		</div>
+		 
+		<div class="input-group mb-3">
+		  <div class="input-group-prepend">
+			<span class="input-group-text" id="plate-span">Plate:</span>
+		  </div>
+		  <input id="plate" type="text" class="form-control" placeholder="" aria-label="Plate" aria-describedby="lisense-plate">
+		</div>
+
+		 
+		<div class="input-group mb-3">
+		  <div class="input-group-prepend">
+			<label class="input-group-text" for="inputGroupSelect01">Color</label>
+		  </div>
+		  <select class="custom-select" id="color">
+			<option selected>Choose...</option>
+			<option value="BGE">Beige</option>
+			<option value="BLU">Blue</option>
+			<option value="BLK">Black</option>
+			<option value="TAN">Tan</option>
+			<option value="SIL">Silver</option>
+			<option value="MAR">Burgundy</option>
+			<option value="WHI">White</option>
+			<option value="RED">Red</option>
+			<option value="LGR">Light Green</option>
+			<option value="GRY">Gray</option>
+			<option value="GLD">Gold</option>
+			<option value="GRN">Green</option>
+			<option value="DGR">Dark Green</option>
+			<option value="DBL">Dark Blue</option>
+			<option value="BRO">Brown</option>
+			<option value="LBL">Light Blue</option>
+			<option value="PLE">Purple</option>
+			<option value="BRZ">Bronze</option>
+			<option value="PNK">Pink</option>
+			<option value="CRM">Ivory</option>
+			<option value="COM">Chrome</option>
+			<option value="ONG">Orange</option>
+			<option value="YEL">Yellow</option>
+			<option value="CPR">Copper</option>
+			<option value="TRQ">Turquoise</option>
+			<option value="LAV">Lavender</option>
+		  </select>
+		</div>
+		 
+		<div class="input-group mb-3">
+		  <div class="input-group-prepend">
+			<span class="input-group-text" id="state-span">State:</span>
+		  </div>
+		  <input id="state" type="text" class="form-control" placeholder="2 Letters" aria-label="State" aria-describedby="state-Res">
+		</div>
+
+
+		<input id="srchbtn" class="btn btn-primary btn-lg" type="button" value="Search">
+
+    </form> 
+	  
+	<!--The template of a card -->  
+	<div id="card-temp" class="card text-center ">
+	  <div class="card-header">
+		Vehicle
+	  </div>
+	  <div class="card-body">
+		<h5 class="card-title">temp</h5>
+		<p class="card-text">Other content</p>
+	  </div>
+	  <div class="card-footer text-muted">
+		date
+	  </div>
+    </div>
+<!-- 	<script>
+		if ($(".card-title").text() == "temp"){
+			$(".card").remove();
+		}
+	</script> -->
+	  
+	<script>
+		
+		function search(){
+
+			var url = "https://data.cityofchicago.org/resource/rp42-fxjt.json";
+			var count = 0;
+			if($('#make').val() != ""){
+ 				url += ((count==0)?"?":"&")+"make=" + $('#make').val().toUpperCase(); 
+				count++;
+			}
+			if($("#plate").val() != ""){
+ 				url += ((count==0)?"?":"&")+"plate=" + $("#plate").val(); 
+				count++;
+			}
+			if($("#color").val() != "Choose..."){
+ 				url += ((count==0)?"?":"&")+"color=" + $("#color").val(); 
+				count++;
+			}
+			if($("#state").val() != ""){
+ 				url += ((count==0)?"?":"&")+"state=" + $("#state").val(); 
+				count++;
+			}
+			
+			$.ajax({
+				url: url,
+				type: "GET",
+				data: {
+				  "$limit" : 5088,
+				}
+			}).done(function(data) {
+			  //alert("Retrieved " + data.length + " records from the dataset!");
+			  console.log(data);
+				
+			  $.each(data, function(i,v){
+					var clone = $("#card-temp").clone();
+				    //clone.find(".card").removeClass('.invisible').addClass('.visible');
+					clone.find(".card-title").text(v.make);
+					clone.find(".card-text").html(
+						"Style: " + v.style + "<br>" +
+						"Model: " + v.model + "<br>" +
+						"Color: " + v.color + "<br>" +
+						"Plate: " + v.plate + "<br>" +
+						"State: " + v.state + "<br>" +
+						"Towed to: " + v.towed_to_address + "<br>" +
+						"Tow Facility Phone: " + v.tow_facility_phone + "<br>" +
+						"Inventory #: " + v.inventory_number + "<br>" 
+					);
+				    clone.find(".card-footer").text(v.tow_date);
+
+
+					$("body").append(clone);
+
+			  });
+				
+				
+			});
+			
+			
+		}
+
+	</script>
+	  
+	  
+	<script>
+	  //make button run query for api
+      $("#srchbtn").on("click", search)
+
+    </script>
+	  
+  </body>
+</html>
